@@ -11,6 +11,7 @@
         width: 194px;
         height: 100%;
         position: fixed;
+        top: 0;
         margin-left: -200px;
         padding: 0 3px;
         background: #efefef;
@@ -46,19 +47,21 @@
             <ul>
                 <li id="msBaidu">Baidu</li>
                 <li id="msGoogle">Google</li>
-                <li>Bing</li>
-                <li></li>
+                <li id="msBing">Bing</li>
+                <li id="msGoogleT">Google翻译</li>
                 <li></li>
             </ul>
         </div>
     </div>
     <script>
         var ms = {};
-        ms.msBaidu = {sURl : 'http://www.baidu.com/s?ie=utf-8&wd=%us'};
-        ms.msGoogle = {sURl : 'https://www.google.com/?gws_rd=cr#newwindow=1&safe=off&q=%us'};
+        ms.msBaidu = {sUrl : 'http://www.baidu.com/s?ie=utf-8&wd=%us'};
+        ms.msGoogle = {sUrl : 'https://www.google.com/?gws_rd=cr#newwindow=1&safe=off&q=%us'};
+        ms.msGoogleT = {sUrl : 'https://translate.google.com/?hl=en#auto/zh-CN/%us'};
+        ms.msBing = {sUrl : 'http://cn.bing.com/search?q=%us'};
 
         function getQueryWord(){
-            var s = location.search;
+            var s = location.href;
                 s = decodeURIComponent(s);
             var sWord = s.match(/(q|wd|word)=([^&]*)(&|$)/);
             if (sWord && sWord.length > 2) {
@@ -67,8 +70,24 @@
             return '';
         }
 
+        var html = document.createElement('div');
+        html.id = 'multiSearch';
+        html.innerHTML = '<h2>多重搜索</h2> <div><input id="msInput" type="text" /></div> <div id="seList"> <ul> <li id="msBaidu">Baidu</li> <li id="msGoogle">Google</li> <li id="msBing">Bing</li> <li id="msGoogleT">Google翻译</li> <li></li> </ul> </div>';
+
+        document.querySelector('body').appendChild(html);
+
+        var css = document.createElement('style');
+        css.innerHTML = 'body{margin-left: 201px; } #multiSearch{width: 194px; height: 100%; position: fixed; top: 0; margin-left: -200px; padding: 0 3px; background: #efefef; border-right: 1px solid #aaa; box-shadow: 1px 0px 10px #888888; } #multiSearch h2{font-weight: normal; font-size: 16px; } #multiSearch ul{list-style: none; margin: 0; padding: 0; } #multiSearch ul li{border: 1px solid #AAA; padding: 5px; text-align: left; cursor: pointer; } #seList{margin-top: 10px; }';
+
+        document.querySelector('head').appendChild(css);
+
         document.querySelector('#msInput').value = getQueryWord();
 
+        document.querySelector('#multiSearch ul').addEventListener('click', function(e) {
+            if(e.target && e.target.nodeName == "LI") {
+                location.href = ms[e.target.id].sUrl.replace(/%us/, document.querySelector('#msInput').value);
+            }
+          })
     </script>
 </body>
 </html>
